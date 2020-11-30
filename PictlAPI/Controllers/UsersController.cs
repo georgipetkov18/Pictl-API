@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PictlCommon.Exceptions;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using PictlData.Attributes;
+using PictlData.Models;
 using PictlData.Services;
+using PictlHelpers.Exceptions;
 using System;
 using System.Threading.Tasks;
 
@@ -23,7 +26,7 @@ namespace PictlAPI.Controllers
             try
             {
                 //TODO: get parameters from request body
-                var user = await userService.GetUserAsync(email, password);
+                var user = await userService.LogInAsync(email, password);
                 return this.Ok(user);
             }
 
@@ -41,15 +44,35 @@ namespace PictlAPI.Controllers
         }
 
         [HttpPost]
-        [Route("register")]
-        public async Task<IActionResult> Register()
+        [Route("register/{email}/{password}/{fName}/{lName}")]
+        public async Task<IActionResult> Register(string email, string password, string fName, string lname)
         {
             //TODO: Get User Info From Request And Create An user
+            //TODO: get parameters from request body
 
             //var status = await userService.RegisterUser(user);
-            //if (status) return this.Ok();
+            //if (status) return this.Ok;
+            var user = new User()
+            {
+                Email = email,
+                FirstName = fName,
+                LastName = lname,
+                Password = password,
+                IsDeleted = false
+            };
+
+            var status = await userService.RegisterUser(user);
+            if (status) return this.Ok();
 
             return this.BadRequest();
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("test")]
+        public IActionResult Test()
+        {
+            return new JsonResult(new { message = "Authorized" }) { StatusCode = StatusCodes.Status200OK };
         }
     }
 }

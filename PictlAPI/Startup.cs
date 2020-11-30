@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using PictlData;
+using PictlData.Middlewares;
 using PictlData.Repositories;
 using PictlData.Services;
 
@@ -27,10 +28,13 @@ namespace PictlAPI
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
+            services.Configure<AppSettings>(this.Configuration.GetSection("AppSettings"));
+
             services.AddTransient<IRepository, Repository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPhotosService, PhotosService>();
             services.AddScoped<IAlbumsService, AlbumsService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,7 +49,14 @@ namespace PictlAPI
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
+
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());   // TODO: Probably shouldn't allow everything
+
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

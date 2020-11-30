@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictlAPI", "PictlAPI\PictlA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictlData", "PictlData\PictlData.csproj", "{2289D8D8-40A8-4BB2-BBF8-55200A242A67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictlCommon", "PictlCommon\PictlCommon.csproj", "{50416DF9-18CF-4758-8141-BF8511FA31AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictlHelpers", "PictlCommon\PictlHelpers.csproj", "{50416DF9-18CF-4758-8141-BF8511FA31AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

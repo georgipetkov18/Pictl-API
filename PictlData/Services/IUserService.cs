@@ -9,7 +9,7 @@ namespace PictlData.Services
 
         Task<User> GetUserAsync(string name);
 
-        Task<User> GetUserAsync(string email, string password);
+        Task<AuthenticateResponse> LogInAsync(string email, string password);
 
         Task<bool> RegisterUser(User user);
     }

@@ -1,8 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PictlCommon.Exceptions;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using PictlData.Models;
 using PictlData.Repositories;
+using PictlHelpers.Exceptions;
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,10 +17,12 @@ namespace PictlData.Services
     public class UserService : IUserService
     {
         private readonly IRepository repo;
+        private readonly AppSettings appSettings;
 
-        public UserService(IRepository repo)
+        public UserService(IRepository repo, IOptions<AppSettings> appSettings)
         {
             this.repo = repo;
+            this.appSettings = appSettings.Value;
         }
 
         public async Task<User> GetUserAsync(int id)
@@ -30,7 +37,7 @@ namespace PictlData.Services
                 ?? throw new NullReferenceException("User does not exist!");
         }
 
-        public async Task<User> GetUserAsync(string email, string password)
+        public async Task<AuthenticateResponse> LogInAsync(string email, string password)
         {
             var user = await repo.Db.Users.FirstOrDefaultAsync(x => x.Email == email && !x.IsDeleted) 
                 ?? throw new NullReferenceException("User does not exist!");
@@ -39,7 +46,9 @@ namespace PictlData.Services
 
             if (encryptedPassword != user.Password) throw new WrongPasswordException();
 
-            return user;
+            var token = GenerateJwtToken(user);
+
+            return new AuthenticateResponse(user, token);
         }
 
         public async Task<bool> RegisterUser(User user)
@@ -69,6 +78,20 @@ namespace PictlData.Services
                 builder.Append(bytes[i].ToString("x2"));
             }
             return builder.ToString();
+        }
+
+        private string GenerateJwtToken(User user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("id", user.ID.ToString()) }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace PictlCommon.Exceptions
+namespace PictlHelpers.Exceptions
 {
     [Serializable]
     public class WrongPasswordException : Exception
