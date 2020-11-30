@@ -13,6 +13,9 @@ namespace PictlData.Models
         public string Name { get; set; }
 
         [Required]
+        public bool IsDeleted { get; set; }
+
+        [Required]
         public virtual ICollection<Photo> Photos { get; set; }
 
         public Category()

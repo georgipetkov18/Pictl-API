@@ -19,5 +19,8 @@ namespace PictlData.Models
 
         [Required]
         public string Password { get; set; }
+
+        [Required]
+        public bool IsDeleted { get; set; }
     }
 }

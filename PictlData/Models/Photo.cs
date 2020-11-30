@@ -20,6 +20,9 @@ namespace PictlData.Models
         public DateTime CreatedAt { get; set; }
 
         [Required]
+        public bool IsDeleted { get; set; }
+
+        [Required]
         public ICollection<Category> Categories { get; set; }
 
         public int Likes { get; set; }

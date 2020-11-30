@@ -16,6 +16,9 @@ namespace PictlData.Models
         public User User { get; set; }
 
         [Required]
+        public bool IsDeleted { get; set; }
+
+        [Required]
         public ICollection<Photo> Photos { get; set; }
 
         public Album()
