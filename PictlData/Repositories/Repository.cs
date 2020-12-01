@@ -17,7 +17,11 @@ namespace PictlData.Repositories
             await this.Db.SaveChangesAsync();
         }
 
+<<<<<<< HEAD
         public void MigrateDatabase()
+=======
+        public void Migrate()
+>>>>>>> e210063112e1be6394cf3f38c00e63b80e52d6b5
         {
             this.Db.Database.Migrate();
         }
