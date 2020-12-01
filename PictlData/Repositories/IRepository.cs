@@ -5,7 +5,7 @@ namespace PictlData.Repositories
     public interface IRepository
     {
         public ApplicationDbContext Db { get; }
-        void Migrate();
+        void MigrateDatabase();
         Task SaveDbChangesAsync();
         Task AddAsync<T>(T entity);
     }
