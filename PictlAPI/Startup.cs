@@ -34,6 +34,7 @@ namespace PictlAPI
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPhotosService, PhotosService>();
             services.AddScoped<IAlbumsService, AlbumsService>();
+            services.AddScoped<ICategoriesService, CategoriesService>();
 
         }
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PictlData.Models;
@@ -27,20 +26,21 @@ namespace PictlData.Services
 
         public async Task<User> GetUserAsync(int id)
         {
-            return await repo.Db.Users.FirstOrDefaultAsync(x => x.ID == id && !x.IsDeleted) 
-                ?? throw new NullReferenceException("User does not exist!");
+            return await repo.Db.Users.SingleOrDefaultAsync(x => x.ID == id && !x.IsDeleted)
+                ?? throw new ArgumentNullException("User does not exist!");
+
         }
 
         public async Task<User> GetUserAsync(string name)
         {
-            return await repo.Db.Users.FirstOrDefaultAsync(x => x.FirstName == name && !x.IsDeleted)
-                ?? throw new NullReferenceException("User does not exist!");
+            return await repo.Db.Users.SingleOrDefaultAsync(x => x.FirstName == name && !x.IsDeleted)
+                ?? throw new ArgumentNullException("User does not exist!");
         }
 
         public async Task<AuthenticateResponse> LogInAsync(string email, string password)
         {
-            var user = await repo.Db.Users.FirstOrDefaultAsync(x => x.Email == email && !x.IsDeleted) 
-                ?? throw new NullReferenceException("User does not exist!");
+            var user = await repo.Db.Users.SingleOrDefaultAsync(x => x.Email == email && !x.IsDeleted)
+                ?? throw new ArgumentNullException("User does not exist!");
 
             var encryptedPassword = EncryptPassword(password);
 

@@ -3,13 +3,17 @@ using Microsoft.AspNetCore.Mvc;
 using PictlData.Attributes;
 using PictlData.Models;
 using PictlData.Services;
+using PictlHelpers;
 using PictlHelpers.Exceptions;
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictlAPI.Controllers
 {
     [ApiController]
+    [Route("[action]")]
     public class UsersController : ControllerBase
     {
         private readonly IUserService userService;
@@ -20,17 +24,17 @@ namespace PictlAPI.Controllers
         }
 
         [HttpPost]
-        [Route("login/{email}/{password}")]
-        public async Task<IActionResult> LogIn(string email, string password)
+        public async Task<IActionResult> LogIn([FromBody] string rawInfo)
         {
             try
             {
-                //TODO: get parameters from request body
-                var user = await userService.LogInAsync(email, password);
+                var parameters = rawInfo.GetParameters("email", "password");
+
+                var user = await userService.LogInAsync(parameters["email"], parameters["password"]);
                 return this.Ok(user);
             }
 
-            catch (NullReferenceException e)
+            catch (ArgumentNullException e)
             {
                 return this.BadRequest(e.Message);
             }
@@ -39,25 +43,20 @@ namespace PictlAPI.Controllers
             {
                 return this.BadRequest(e.Message);
             }
-            
-            //var user = new User() { Email = "a", ID = 1 };  
+             
         }
 
         [HttpPost]
-        [Route("register/{email}/{password}/{fName}/{lName}")]
-        public async Task<IActionResult> Register(string email, string password, string fName, string lname)
+        public async Task<IActionResult> Register([FromBody] string rawInfo)
         {
-            //TODO: Get User Info From Request And Create An user
-            //TODO: get parameters from request body
+            var parameters = rawInfo.GetParameters("email", "password", "firstName", "lastname");
 
-            //var status = await userService.RegisterUser(user);
-            //if (status) return this.Ok;
             var user = new User()
             {
-                Email = email,
-                FirstName = fName,
-                LastName = lname,
-                Password = password,
+                Email = parameters["email"],
+                FirstName = parameters["firstName"],
+                LastName = parameters["lastname"],
+                Password = parameters["password"],
                 IsDeleted = false
             };
 
@@ -69,10 +68,13 @@ namespace PictlAPI.Controllers
 
         [Authorize]
         [HttpPost]
-        [Route("test")]
         public IActionResult Test()
         {
-            return new JsonResult(new { message = "Authorized" }) { StatusCode = StatusCodes.Status200OK };
+            //string param1 = HttpUtility.ParseQueryString(rawInfo).Get("a");
+            var token = this.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            var handler = new JwtSecurityTokenHandler();
+            var userID = handler.ReadJwtToken(token).Claims.First().Value;
+            return new JsonResult(new { message = "Authorized", id = userID }) { StatusCode = StatusCodes.Status200OK };
         }
     }
 }
