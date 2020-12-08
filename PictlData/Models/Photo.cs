@@ -11,7 +11,7 @@ namespace PictlData.Models
         public int ID { get; set; }
 
         [Required]
-        public string PhotoURL { get; set; }
+        public byte[] Data { get; set; }
 
         [Required]
         public virtual User User { get; set; }

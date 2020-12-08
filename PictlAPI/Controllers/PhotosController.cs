@@ -2,14 +2,17 @@
 using PictlData.Attributes;
 using PictlData.Services;
 using PictlHelpers;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace PictlAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]/[action]/{id?}")]
     public class PhotosController : ControllerBase
     {
         private readonly IPhotosService photosService;
@@ -20,9 +23,10 @@ namespace PictlAPI.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromBody] string rawInfo)
         {
-            var status = await photosService.DeletePhotoAsync(id);
+            var parameters = rawInfo.GetParameters("id");
+            var status = await photosService.DeletePhotoAsync(int.Parse(parameters["id"]));
             if (status) return this.Ok();
 
             return this.BadRequest();
@@ -31,23 +35,25 @@ namespace PictlAPI.Controllers
         [Authorize]
         public async Task<IActionResult> Upload([FromBody] string rawInfo)
         {
-            var parameters = rawInfo.GetParameters("url");
+            var parameters = rawInfo.GetParameters("data", "categoryName");
             var token = this.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             var handler = new JwtSecurityTokenHandler();
             var userID = int.Parse(handler.ReadJwtToken(token).Claims.First().Value);
-            var status = await this.photosService.UploadPhotoAsync(userID, parameters["url"]);
+            //var decodedData = parameters["data"].Replace("-", "");
+            //var c = decodedData.Replace('_', '/');
+
+
+            var b = HttpUtility.UrlDecode(parameters["data"], Encoding.ASCII);
+            var status = await this.photosService.UploadPhotoAsync(userID, Convert.FromBase64String(b), parameters["categoryName"]);
             if (status) return this.Ok();
 
             return this.BadRequest();
         }
 
-        [Authorize]
-        public async Task<IActionResult> AssignToCategory(string categoryName, int photoId)
+        public async Task<IActionResult> Display(int id)
         {
-            var status = await this.photosService.AssignToCategoryAsync(categoryName, photoId);
-            if (status) return this.Ok();
-
-            return this.BadRequest();
+            var photo = await this.photosService.GetPhotoByIdAsync(id);
+            return this.File(photo.Data, "image/png");
         }
 
         [Authorize]

@@ -60,34 +60,22 @@ namespace PictlData.Services
                 ?? throw new ArgumentNullException("There are no photos!");
         }
 
-        public async Task<bool> UploadPhotoAsync(int userId, string url)
+        public async Task<bool> UploadPhotoAsync(int userId, byte[] data, string categoryName)
         {
             try
             {
-                await repo.AddAsync(new Photo()
+                var photo = new Photo()
                 {
-                    PhotoURL = url,
+                    Data = data,
                     User = await userService.GetUserAsync(userId),
                     CreatedAt = DateTime.Now,
                     Likes = 0,
                     IsDeleted = false
-                });
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-        public async Task<bool> AssignToCategoryAsync(string categoryName, int photoId)
-        {
-            try
-            {
+                };
+
                 var category = await this.categoriesService.GetCategoryAsync(categoryName);
-                var photo = await this.GetPhotoByIdAsync(photoId);
-                category.Photos.Add(photo);
                 photo.Categories.Add(category);
-                await this.repo.SaveDbChangesAsync();
+                await repo.AddAsync(photo);
                 return true;
             }
             catch (Exception)

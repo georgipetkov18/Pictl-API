@@ -42,7 +42,7 @@ namespace PictlData.Services
 
         public async Task<Album> GetAlbumAsync(int id)
         {
-            return await this.repo.Db.Albums.SingleOrDefaultAsync(x => x.ID == id && x!.IsDeleted)
+            return await this.repo.Db.Albums.SingleOrDefaultAsync(x => x.ID == id && !x.IsDeleted)
                 ?? throw new ArgumentNullException("Album does not exist!");
         }
 
@@ -53,5 +53,7 @@ namespace PictlData.Services
 
             return await album.Photos.Where(p => !p.IsDeleted).AsQueryable().ToListAsync();
         }
+
+
     }
 }

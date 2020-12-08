@@ -15,7 +15,6 @@ namespace PictlData.Models
         [Required]
         public bool IsDeleted { get; set; }
 
-        [Required]
         public virtual ICollection<Photo> Photos { get; set; }
 
         public Category()
