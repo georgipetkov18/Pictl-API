@@ -12,7 +12,7 @@ using System.Web;
 namespace PictlAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]/{id?}")]
+    [Route("[controller]/[action]")]
     public class PhotosController : ControllerBase
     {
         private readonly IPhotosService photosService;
@@ -23,6 +23,7 @@ namespace PictlAPI.Controllers
         }
 
         [Authorize]
+        [HttpPost]
         public async Task<IActionResult> Delete([FromBody] string rawInfo)
         {
             var parameters = rawInfo.GetParameters("id");
@@ -33,30 +34,21 @@ namespace PictlAPI.Controllers
         }
 
         [Authorize]
+        [HttpPost]
         public async Task<IActionResult> Upload([FromBody] string rawInfo)
         {
-            var parameters = rawInfo.GetParameters("data", "categoryName");
+            var parameters = rawInfo.GetParameters("url", "categoryName");
             var token = this.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             var handler = new JwtSecurityTokenHandler();
             var userID = int.Parse(handler.ReadJwtToken(token).Claims.First().Value);
-            //var decodedData = parameters["data"].Replace("-", "");
-            //var c = decodedData.Replace('_', '/');
-
-
-            var b = HttpUtility.UrlDecode(parameters["data"], Encoding.ASCII);
-            var status = await this.photosService.UploadPhotoAsync(userID, Convert.FromBase64String(b), parameters["categoryName"]);
+            var status = await this.photosService.UploadPhotoAsync(userID, parameters["url"], parameters["categoryName"]);
             if (status) return this.Ok();
 
             return this.BadRequest();
         }
 
-        public async Task<IActionResult> Display(int id)
-        {
-            var photo = await this.photosService.GetPhotoByIdAsync(id);
-            return this.File(photo.Data, "image/png");
-        }
-
         [Authorize]
+
         public async Task<IActionResult> AddToAlbum([FromBody] string rawInfo)
         {
             var parameters = rawInfo.GetParameters("photoId", "albumId");
@@ -66,6 +58,23 @@ namespace PictlAPI.Controllers
             if (status) return this.Ok();
 
             return this.BadRequest();
+
+        }
+
+        [Authorize]
+        public async Task<IActionResult> GetPhotoData([FromBody] string rawInfo)
+        {
+            try
+            {
+                var parameters = rawInfo.GetParameters("id");
+                var photo = await this.photosService.GetPhotoByIdAsync(int.Parse(parameters["id"]));
+                return new JsonResult(new { userId = photo.User.ID, url = photo.Url, createdAt = photo.CreatedAt });
+            }
+
+            catch (ArgumentNullException e)
+            {
+                return this.BadRequest(e.Message);
+            }
 
         }
     }

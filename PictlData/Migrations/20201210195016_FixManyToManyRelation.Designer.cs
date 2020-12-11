@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PictlData;
 
 namespace PictlData.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201210195016_FixManyToManyRelation")]
+    partial class FixManyToManyRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,14 +102,14 @@ namespace PictlData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
 
                     b.HasIndex("AlbumID");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserID");
 
                     b.ToTable("Photos");
                 });
@@ -179,9 +181,7 @@ namespace PictlData.Migrations
 
                     b.HasOne("PictlData.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserID");
 
                     b.Navigation("User");
                 });

@@ -28,7 +28,6 @@ namespace PictlData.Services
         {
             return await repo.Db.Users.SingleOrDefaultAsync(x => x.ID == id && !x.IsDeleted)
                 ?? throw new ArgumentNullException("User does not exist!");
-
         }
 
         public async Task<User> GetUserAsync(string name)

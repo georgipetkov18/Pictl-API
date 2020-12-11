@@ -65,7 +65,7 @@ namespace PictlData.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Data = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserID = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),

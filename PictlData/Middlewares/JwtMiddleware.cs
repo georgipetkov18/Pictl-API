@@ -26,12 +26,12 @@ namespace PictlData.Middlewares
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                AttachUserToContext(context, userService, token);
+                await AttachUserToContext(context, userService, token);
 
             await next(context);
         }
 
-        private void AttachUserToContext(HttpContext context, IUserService userService, string token)
+        private async Task AttachUserToContext(HttpContext context, IUserService userService, string token)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace PictlData.Middlewares
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
-                var user = userService.GetUserAsync(userId);
+                var user = await userService.GetUserAsync(userId);
                 context.Items.Add("User", user);
                 
             }

@@ -51,31 +51,37 @@ namespace PictlData.Services
                 ?? throw new ArgumentNullException("There are no photos!");
         }
 
-        public async Task<IEnumerable<Photo>> GetPhotosByCategoryNameAsync(string name)
-        {
-            return await this.repo.Db.Photos
-                .Where(p => !p.IsDeleted && p.Categories
-                .Any(c => c.Name == name))
-                .ToListAsync()
-                ?? throw new ArgumentNullException("There are no photos!");
-        }
+        //public async Task<IEnumerable<Photo>> GetPhotosByCategoryNameAsync(string name)
+        //{
+        //    return await this.repo.Db.Photos
+        //        .Where(p => !p.IsDeleted && p.Categories
+        //        .Any(c => c.Name == name))
+        //        .ToListAsync()
+        //        ?? throw new ArgumentNullException("There are no photos!");
+        //}
 
-        public async Task<bool> UploadPhotoAsync(int userId, byte[] data, string categoryName)
+        public async Task<bool> UploadPhotoAsync(int userId, string url, string categoryName)
         {
             try
             {
+                var user = await userService.GetUserAsync(userId);
                 var photo = new Photo()
                 {
-                    Data = data,
-                    User = await userService.GetUserAsync(userId),
+                    Url = url,
+                    UserId = user.ID,
                     CreatedAt = DateTime.Now,
                     Likes = 0,
                     IsDeleted = false
                 };
 
                 var category = await this.categoriesService.GetCategoryAsync(categoryName);
-                photo.Categories.Add(category);
-                await repo.AddAsync(photo);
+                await this.repo.Db.Photos.AddAsync(photo);
+                await this.repo.Db.CategoryPhotos.AddAsync(new CategoryPhoto()
+                {
+                    CategoryId = category.ID,
+                    Photo = photo
+                });
+                await this.repo.SaveDbChangesAsync();
                 return true;
             }
             catch (Exception)

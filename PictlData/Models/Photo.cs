@@ -11,9 +11,9 @@ namespace PictlData.Models
         public int ID { get; set; }
 
         [Required]
-        public byte[] Data { get; set; }
+        public string Url { get; set; }
 
-        [Required]
+        public int UserId { get; set; }
         public virtual User User { get; set; }
 
         [Required]
@@ -22,14 +22,13 @@ namespace PictlData.Models
         [Required]
         public bool IsDeleted { get; set; }
 
-        [Required]
-        public ICollection<Category> Categories { get; set; }
+        public ICollection<CategoryPhoto> CategoryPhotos { get; set; }
 
         public int Likes { get; set; }
 
-        public Photo()
-        {
-            this.Categories = new HashSet<Category>();
-        }
+        //public Photo()
+        //{
+        //    this.Categories = new HashSet<Category>();
+        //}
     }
 }

@@ -15,11 +15,11 @@ namespace PictlData.Models
         [Required]
         public bool IsDeleted { get; set; }
 
-        public virtual ICollection<Photo> Photos { get; set; }
+        public ICollection<CategoryPhoto> CategoryPhotos { get; set; }
 
-        public Category()
-        {
-            this.Photos = new HashSet<Photo>();
-        }
+        //public Category()
+        //{
+        //    this.Photos = new HashSet<Photo>();
+        //}
     }
 }

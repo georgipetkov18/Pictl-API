@@ -10,7 +10,7 @@ using PictlData;
 namespace PictlData.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201208084748_InitialCreate")]
+    [Migration("20201210092602_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,15 +92,15 @@ namespace PictlData.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<int>("Likes")
                         .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserID")
                         .HasColumnType("int");

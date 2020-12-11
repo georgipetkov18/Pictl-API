@@ -3,21 +3,38 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PictlData;
 
 namespace PictlData.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201210134238_VirtualNavProp")]
+    partial class VirtualNavProp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.0");
+
+            modelBuilder.Entity("CategoryPhoto", b =>
+                {
+                    b.Property<int>("CategoriesID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PhotosID")
+                        .HasColumnType("int");
+
+                    b.HasKey("CategoriesID", "PhotosID");
+
+                    b.HasIndex("PhotosID");
+
+                    b.ToTable("CategoryPhoto");
+                });
 
             modelBuilder.Entity("PictlData.Models.Album", b =>
                 {
@@ -62,21 +79,6 @@ namespace PictlData.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("PictlData.Models.CategoryPhoto", b =>
-                {
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PhotoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CategoryId", "PhotoId");
-
-                    b.HasIndex("PhotoId");
-
-                    b.ToTable("CategoryPhotos");
-                });
-
             modelBuilder.Entity("PictlData.Models.Photo", b =>
                 {
                     b.Property<int>("ID")
@@ -100,14 +102,14 @@ namespace PictlData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
 
                     b.HasIndex("AlbumID");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserID");
 
                     b.ToTable("Photos");
                 });
@@ -143,6 +145,21 @@ namespace PictlData.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("CategoryPhoto", b =>
+                {
+                    b.HasOne("PictlData.Models.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PictlData.Models.Photo", null)
+                        .WithMany()
+                        .HasForeignKey("PhotosID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("PictlData.Models.Album", b =>
                 {
                     b.HasOne("PictlData.Models.User", "User")
@@ -150,25 +167,6 @@ namespace PictlData.Migrations
                         .HasForeignKey("UserID");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PictlData.Models.CategoryPhoto", b =>
-                {
-                    b.HasOne("PictlData.Models.Category", "Category")
-                        .WithMany("CategoryPhotos")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PictlData.Models.Photo", "Photo")
-                        .WithMany("CategoryPhotos")
-                        .HasForeignKey("PhotoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Photo");
                 });
 
             modelBuilder.Entity("PictlData.Models.Photo", b =>
@@ -179,9 +177,7 @@ namespace PictlData.Migrations
 
                     b.HasOne("PictlData.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserID");
 
                     b.Navigation("User");
                 });
@@ -189,16 +185,6 @@ namespace PictlData.Migrations
             modelBuilder.Entity("PictlData.Models.Album", b =>
                 {
                     b.Navigation("Photos");
-                });
-
-            modelBuilder.Entity("PictlData.Models.Category", b =>
-                {
-                    b.Navigation("CategoryPhotos");
-                });
-
-            modelBuilder.Entity("PictlData.Models.Photo", b =>
-                {
-                    b.Navigation("CategoryPhotos");
                 });
 #pragma warning restore 612, 618
         }

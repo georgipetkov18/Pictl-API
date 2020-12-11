@@ -26,7 +26,7 @@ namespace PictlAPI
         {
             services.AddControllers();
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
             services.Configure<AppSettings>(this.Configuration.GetSection("AppSettings"));
 
