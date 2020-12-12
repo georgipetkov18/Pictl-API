@@ -7,5 +7,6 @@ namespace PictlData.Services
     {
         Task<bool> CreateCategoryAsync(string name);
         Task<Category> GetCategoryAsync(string name);
+        Task<bool> CategoryExistsAsync(string name);
     }
 }

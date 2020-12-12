@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PictlData.Attributes;
 using PictlData.Services;
 using PictlHelpers;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace PictlAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]/[action]/{name?}")]
     public class PhotosController : ControllerBase
     {
         private readonly IPhotosService photosService;
@@ -23,7 +22,7 @@ namespace PictlAPI.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> Delete([FromBody] string rawInfo)
         {
             var parameters = rawInfo.GetParameters("id");
@@ -48,7 +47,41 @@ namespace PictlAPI.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetUserPhotos()
+        {
+            var token = this.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            var handler = new JwtSecurityTokenHandler();
+            var userID = int.Parse(handler.ReadJwtToken(token).Claims.First().Value);
+            try
+            {
+                var photos = await this.photosService.GetUserPhotosAsync(userID);
+                return new JsonResult(new { photos = photos}) { StatusCode = StatusCodes.Status200OK };
+            }
 
+            catch (ArgumentNullException e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetPhotos()
+        {
+            try
+            {
+                var photos = await this.photosService.GetOrderedByDatePhotosAsync();
+                return this.Ok(photos);
+            }
+
+            catch (ArgumentNullException e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
+
+        [Authorize]
         public async Task<IActionResult> AddToAlbum([FromBody] string rawInfo)
         {
             var parameters = rawInfo.GetParameters("photoId", "albumId");
@@ -62,6 +95,7 @@ namespace PictlAPI.Controllers
         }
 
         [Authorize]
+        [HttpGet]
         public async Task<IActionResult> GetPhotoData([FromBody] string rawInfo)
         {
             try
@@ -76,6 +110,53 @@ namespace PictlAPI.Controllers
                 return this.BadRequest(e.Message);
             }
 
+        }
+
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> IncrementLikes([FromBody] string rawInfo)
+        {
+            try
+            {
+                var parameters = rawInfo.GetParameters("photoId");
+                var result = await this.photosService.IncrementLikesAsync(int.Parse(parameters["photoId"]));
+                return this.Created("/photos/incrementlikes", result);
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> ReduceLikes([FromBody] string rawInfo)
+        {
+            try
+            {
+                var parameters = rawInfo.GetParameters("photoId");
+                var result = await this.photosService.ReduceLikesAsync(int.Parse(parameters["photoId"]));
+                return this.Created("/photos/incrementlikes", result);
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetPhotosByCategoryName(string name)
+        {
+            try
+            {
+                var photos = await this.photosService.GetPhotosByCategoryNameAsync(name);
+                return this.Ok(photos);
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
         }
     }
 }

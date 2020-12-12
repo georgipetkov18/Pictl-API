@@ -9,17 +9,23 @@ namespace PictlData.Services
     public class CategoriesService : ICategoriesService
     {
         private readonly IRepository repo;
-        private readonly IPhotosService photosService;
 
         public CategoriesService(IRepository repo)
         {
             this.repo = repo;
         }
 
+        public async Task<bool> CategoryExistsAsync(string name)
+        {
+            return await this.repo.Db.Categories.AnyAsync(x => x.Name == name);
+        }
+
         public async Task<bool> CreateCategoryAsync(string name)
         {
             try
             {
+                if (await this.CategoryExistsAsync(name)) return true;
+
                 await this.repo.AddAsync(new Category()
                 {
                     Name = name,

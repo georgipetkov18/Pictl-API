@@ -16,11 +16,12 @@ namespace PictlAPI.Controllers
             this.categoriesService = categoriesService;
         }
 
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] string rawInfo)
         {
-            var parameters = rawInfo.GetParameters("name");
-            var status = await this.categoriesService.CreateCategoryAsync(parameters["name"]);
-            if (status) return this.Created("/category/create", parameters["name"]);
+            var parameters = rawInfo.GetParameters("categoryName");
+            var status = await this.categoriesService.CreateCategoryAsync(parameters["categoryName"]);
+            if (status) return this.Created("/category/create", parameters["categoryName"]);
 
             return this.BadRequest();
         }

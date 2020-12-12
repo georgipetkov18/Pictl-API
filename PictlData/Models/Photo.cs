@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PictlData.Models
 {
@@ -14,6 +15,8 @@ namespace PictlData.Models
         public string Url { get; set; }
 
         public int UserId { get; set; }
+
+        [JsonIgnore]
         public virtual User User { get; set; }
 
         [Required]
@@ -22,6 +25,7 @@ namespace PictlData.Models
         [Required]
         public bool IsDeleted { get; set; }
 
+        [JsonIgnore]
         public ICollection<CategoryPhoto> CategoryPhotos { get; set; }
 
         public int Likes { get; set; }

@@ -51,19 +51,13 @@ namespace PictlData.Services
                 ?? throw new ArgumentNullException("There are no photos!");
         }
 
-        //public async Task<IEnumerable<Photo>> GetPhotosByCategoryNameAsync(string name)
-        //{
-        //    return await this.repo.Db.Photos
-        //        .Where(p => !p.IsDeleted && p.Categories
-        //        .Any(c => c.Name == name))
-        //        .ToListAsync()
-        //        ?? throw new ArgumentNullException("There are no photos!");
-        //}
-
         public async Task<bool> UploadPhotoAsync(int userId, string url, string categoryName)
         {
             try
             {
+                var status = await this.categoriesService.CreateCategoryAsync(categoryName);
+                if (!status) return false;
+
                 var user = await userService.GetUserAsync(userId);
                 var photo = new Photo()
                 {
@@ -105,6 +99,55 @@ namespace PictlData.Services
             {
                 return false;
             }
+        }
+
+        public async Task<IEnumerable<Photo>> GetUserPhotosAsync(int userId)
+        {
+            return await this.repo.Db.Photos
+                .Where(p => p.UserId == userId & !p.IsDeleted)
+                .ToListAsync() ?? throw new ArgumentNullException("Current user has no photos.");
+
+        }
+
+        public async Task<int> IncrementLikesAsync(int photoId)
+        {
+            var photo = await this.GetPhotoByIdAsync(photoId);
+            photo.Likes++;
+            await this.repo.SaveDbChangesAsync();
+            return photo.Likes;
+        }
+
+        public async Task<int> ReduceLikesAsync(int photoId)
+        {
+            var photo = await this.GetPhotoByIdAsync(photoId);
+            if (photo.Likes > 0) photo.Likes--;
+            await this.repo.SaveDbChangesAsync();
+            return photo.Likes;
+        }
+
+        public async Task<IEnumerable<Photo>> GetPhotosByCategoryNameAsync(string name)
+        {
+            var category = await this.categoriesService.GetCategoryAsync(name);
+
+            var categoryPhotos = await this.repo.Db.CategoryPhotos.Where(p => p.CategoryId == category.ID).ToListAsync();
+
+            var photos = new List<Photo>();
+
+            foreach (var categoryPhoto in categoryPhotos)
+            {
+                var photo = await this.GetPhotoByIdAsync(categoryPhoto.PhotoId);
+                photos.Add(photo);
+            }
+
+            return photos;
+        }
+
+        public async Task<IEnumerable<Photo>> GetOrderedByDatePhotosAsync()
+        {
+            return await this.repo.Db.Photos
+                .Where(p => !p.IsDeleted)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync() ?? throw new ArgumentNullException("There are no photos!");
         }
     }
 }
