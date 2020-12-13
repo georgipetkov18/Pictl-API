@@ -82,8 +82,9 @@ namespace PictlData.Services
                 await this.repo.SaveDbChangesAsync();
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                var a = e.Message;
                 return false;
             }
         }

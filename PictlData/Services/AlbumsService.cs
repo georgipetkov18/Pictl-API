@@ -46,7 +46,7 @@ namespace PictlData.Services
             var album = new Album()
             {
                 Name = albumName,
-                User = user,
+                UserId = user.ID,
                 IsDeleted = false
             };
             await this.repo.AddAsync(album);

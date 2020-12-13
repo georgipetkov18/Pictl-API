@@ -73,7 +73,7 @@ namespace PictlAPI.Controllers
             var handler = new JwtSecurityTokenHandler();
             var userID = int.Parse(handler.ReadJwtToken(token).Claims.First().Value);
             var user = await this.userService.GetUserAsync(userID);
-            return new JsonResult(new { firstName = user.FirstName, lastName = user.LastName, email = user.Email });
+            return new JsonResult(new { id = user.ID, firstName = user.FirstName, lastName = user.LastName, email = user.Email });
         }
     }
 }
