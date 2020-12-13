@@ -46,5 +46,11 @@ namespace PictlData.Services
             return await repo.Db.Categories.SingleOrDefaultAsync(x => x.Name == name && !x.IsDeleted)
                 ?? throw new ArgumentNullException($"Category with name: {name} does not exist!");
         }
+
+        public async Task<Category> GetCategoryAsync(int id)
+        {
+            return await repo.Db.Categories.SingleOrDefaultAsync(x => x.ID == id && !x.IsDeleted)
+                ?? throw new ArgumentNullException($"Category with id: {id} does not exist!");
+        }
     }
 }

@@ -144,10 +144,26 @@ namespace PictlData.Services
 
         public async Task<IEnumerable<Photo>> GetOrderedByDatePhotosAsync()
         {
-            return await this.repo.Db.Photos
+            var photos = await this.repo.Db.Photos
                 .Where(p => !p.IsDeleted)
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync() ?? throw new ArgumentNullException("There are no photos!");
+
+            foreach (var photo in photos)
+            {
+                var user = await this.userService.GetUserAsync(photo.UserId);
+                var categoryPhoto1 = await this.repo.Db.CategoryPhotos.FirstOrDefaultAsync(x => x.PhotoId == photo.ID);
+                var categoryPhotos = await this.repo.Db.CategoryPhotos.Where(x => x.PhotoId == photo.ID).ToListAsync();
+                photo.User = user;
+
+                foreach (var categoryPhoto in categoryPhotos)
+                {
+                    var category = await this.categoriesService.GetCategoryAsync(categoryPhoto.CategoryId);
+                    photo.CategoriesNames.Add(category.Name);
+                }
+            }
+
+            return photos;
         }
     }
 }

@@ -76,16 +76,5 @@ namespace PictlAPI.Controllers
             var user = await this.userService.GetUserAsync(userID);
             return new JsonResult(new { firstName = user.FirstName, lastName = user.LastName, email = user.Email });
         }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult Test()
-        {
-            //string param1 = HttpUtility.ParseQueryString(rawInfo).Get("a");
-            var token = this.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            var handler = new JwtSecurityTokenHandler();
-            var userID = handler.ReadJwtToken(token).Claims.First().Value;
-            return new JsonResult(new { message = "Authorized", id = userID }) { StatusCode = StatusCodes.Status200OK };
-        }
     }
 }

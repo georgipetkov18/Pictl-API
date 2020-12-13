@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace PictlData.Models
@@ -14,9 +15,9 @@ namespace PictlData.Models
         [Required]
         public string Url { get; set; }
 
+        [JsonIgnore]
         public int UserId { get; set; }
 
-        [JsonIgnore]
         public virtual User User { get; set; }
 
         [Required]
@@ -28,11 +29,14 @@ namespace PictlData.Models
         [JsonIgnore]
         public ICollection<CategoryPhoto> CategoryPhotos { get; set; }
 
+        [NotMapped]
+        public ICollection<string> CategoriesNames { get; set; }
+
         public int Likes { get; set; }
 
-        //public Photo()
-        //{
-        //    this.Categories = new HashSet<Category>();
-        //}
+        public Photo()
+        {
+            this.CategoriesNames = new HashSet<string>();
+        }
     }
 }
