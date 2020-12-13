@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PictlData.Services;
 using PictlHelpers;
+using System;
 using System.Threading.Tasks;
 
 namespace PictlAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]/[action]/{id?}")]
     public class AlbumsController : ControllerBase
     {
         private readonly IAlbumsService albumsService;
@@ -24,6 +25,20 @@ namespace PictlAPI.Controllers
             if (status) return this.Ok();
 
             return this.BadRequest();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAlbum(int id)
+        {
+            try
+            {
+                var album = await this.albumsService.GetAlbumAsync(id);
+                return this.Ok(album);
+            }
+            catch (ArgumentNullException e)
+            {
+                return this.BadRequest(e.Message);
+            }
         }
     }
 }
