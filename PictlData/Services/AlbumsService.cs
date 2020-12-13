@@ -40,6 +40,19 @@ namespace PictlData.Services
             }
         }
 
+        public async Task<Album> CreateAlbumAsync(string albumName, int userId)
+        {
+            var user = await userService.GetUserAsync(userId);
+            var album = new Album()
+            {
+                Name = albumName,
+                User = user,
+                IsDeleted = false
+            };
+            await this.repo.AddAsync(album);
+            return album;
+        }
+
         public async Task<Album> GetAlbumAsync(int id)
         {
             return await this.repo.Db.Albums.SingleOrDefaultAsync(x => x.ID == id && !x.IsDeleted)

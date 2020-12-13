@@ -75,6 +75,10 @@ namespace PictlData.Services
                     CategoryId = category.ID,
                     Photo = photo
                 });
+
+                var album = await this.albumsService.CreateAlbumAsync($"{user.FirstName} {user.LastName}", userId);
+                album.Photos.Add(photo);
+
                 await this.repo.SaveDbChangesAsync();
                 return true;
             }

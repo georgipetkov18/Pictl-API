@@ -10,6 +10,7 @@ namespace PictlData.Services
     {
         Task<IEnumerable<Photo>> GetPicturesByAlbumNameAsync(string albumName);
         Task<bool> CreateAsync(string albumName, int userId);
+        Task<Album> CreateAlbumAsync(string albumName, int userId);
         Task<Album> GetAlbumAsync(int id);
     }
 }
