@@ -36,7 +36,7 @@ namespace PictlData.Services
             {
                 return false;
             }
-            
+
         }
 
         public async Task<Photo> GetPhotoByIdAsync(int id)
@@ -78,6 +78,7 @@ namespace PictlData.Services
 
                 var album = await this.albumsService.CreateAlbumAsync($"{user.FirstName} {user.LastName}", userId);
                 album.Photos.Add(photo);
+                photo.AlbumId = album.ID;
 
                 await this.repo.SaveDbChangesAsync();
                 return true;

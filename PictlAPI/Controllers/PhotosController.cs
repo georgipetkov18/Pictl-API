@@ -56,7 +56,7 @@ namespace PictlAPI.Controllers
             try
             {
                 var photos = await this.photosService.GetUserPhotosAsync(userID);
-                return new JsonResult(new { photos = photos}) { StatusCode = StatusCodes.Status200OK };
+                return new JsonResult(new { photos = photos }) { StatusCode = StatusCodes.Status200OK };
             }
 
             catch (ArgumentNullException e)

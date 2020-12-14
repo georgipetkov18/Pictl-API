@@ -27,15 +27,15 @@ namespace PictlAPI.Controllers
             return this.BadRequest();
         }
 
-        [HttpGet]
         public async Task<IActionResult> GetAlbum(int id)
         {
             try
             {
-                var album = await this.albumsService.GetAlbumAsync(id);
-                return this.Ok(album);
+                var photos = await this.albumsService.GetPhotosAsync(id);
+                return this.Ok(photos);
             }
-            catch (ArgumentNullException e)
+
+            catch (Exception e)
             {
                 return this.BadRequest(e.Message);
             }
