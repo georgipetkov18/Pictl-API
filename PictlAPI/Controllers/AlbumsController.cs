@@ -32,10 +32,13 @@ namespace PictlAPI.Controllers
             try
             {
                 var photos = await this.albumsService.GetPhotosAsync(id);
-                return this.Ok(photos);
+                var album = await this.albumsService.GetAlbumAsync(id);
+
+                var result = new JsonResult(new { albumName = album.Name, photos = photos });
+                return this.Ok(result.Value);
             }
 
-            catch (Exception e)
+            catch (ArgumentNullException e)
             {
                 return this.BadRequest(e.Message);
             }

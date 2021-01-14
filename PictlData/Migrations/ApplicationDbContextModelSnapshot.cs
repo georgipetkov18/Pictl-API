@@ -84,7 +84,7 @@ namespace PictlData.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int?>("AlbumID")
+                    b.Property<int>("AlbumId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -105,7 +105,7 @@ namespace PictlData.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AlbumID");
+                    b.HasIndex("AlbumId");
 
                     b.HasIndex("UserId");
 
@@ -177,7 +177,9 @@ namespace PictlData.Migrations
                 {
                     b.HasOne("PictlData.Models.Album", null)
                         .WithMany("Photos")
-                        .HasForeignKey("AlbumID");
+                        .HasForeignKey("AlbumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PictlData.Models.User", "User")
                         .WithMany()

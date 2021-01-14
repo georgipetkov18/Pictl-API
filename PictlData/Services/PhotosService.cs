@@ -41,8 +41,9 @@ namespace PictlData.Services
 
         public async Task<Photo> GetPhotoByIdAsync(int id)
         {
-            return await this.repo.Db.Photos.SingleOrDefaultAsync(x => x.ID == id && !x.IsDeleted)
+            var photo = await this.repo.Db.Photos.SingleOrDefaultAsync(x => x.ID == id && !x.IsDeleted)
                 ?? throw new ArgumentNullException("Photo does not exist!");
+            return photo;
         }
 
         public async Task<IEnumerable<Photo>> GetPhotosAsync()

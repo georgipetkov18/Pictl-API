@@ -79,6 +79,9 @@ namespace PictlData.Services
 
         public async Task<IEnumerable<Photo>> GetPhotosAsync(int albumId)
         {
+            if (await this.repo.Db.Albums.AnyAsync(a => a.ID != albumId || a.IsDeleted)) 
+                throw new ArgumentNullException($"Album with id {albumId} does not exist!");
+
             return await this.repo.Db.Photos.Where(p => p.AlbumId == albumId && !p.IsDeleted).ToListAsync();
         }
     }

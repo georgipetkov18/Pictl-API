@@ -102,7 +102,7 @@ namespace PictlAPI.Controllers
             {
                 var parameters = rawInfo.GetParameters("id");
                 var photo = await this.photosService.GetPhotoByIdAsync(int.Parse(parameters["id"]));
-                return new JsonResult(new { userId = photo.User.ID, url = photo.Url, createdAt = photo.CreatedAt });
+                return new JsonResult(new { userId = photo.UserId, url = photo.Url, createdAt = photo.CreatedAt });
             }
 
             catch (ArgumentNullException e)

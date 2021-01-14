@@ -25,6 +25,7 @@ namespace PictlData.Models
 
         [Required]
         public bool IsDeleted { get; set; }
+        [Required]
         public int AlbumId { get; set; }
 
         [JsonIgnore]
